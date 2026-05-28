@@ -36,7 +36,7 @@ with tab1:
             with strl.spinner("AI sedang membedah struktur musikmu..."):
                 try:
                     # Menggunakan model paling aman dan kompatibel untuk segala versi pustaka
-                    model = genai.GenerativeModel('gemini-1.0-pro')
+                    model = genai.GenerativeModel('gemini-1.5-flash')
                     perintah = f"Analisis struktur musik, progresi chord, dan makna dari teks musik berikut secara mendalam namun mudah dipahami: {input_musik}"
                     respons = model.generate_content(perintah)
                     strl.success("Analisis Selesai!")
@@ -64,7 +64,7 @@ with tab2:
             with strl.spinner("AI sedang menggubah lirik, not angka, dan chord untukmu..."):
                 try:
                     # Menggunakan model paling aman dan kompatibel untuk segala versi pustaka
-                    model = genai.GenerativeModel('gemini-1.0-pro')
+                    model = genai.GenerativeModel('gemini-1.5-flash')
                     perintah = (
                         f"Buatkan sebuah lagu utuh (ada Bait/Verse dan Reff/Chorus) dengan tema '{tema}', "
                         f"bergenre {genre}, dengan tempo {tempo}. "

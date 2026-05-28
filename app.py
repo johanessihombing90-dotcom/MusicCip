@@ -1,3 +1,7 @@
+import os
+# SAKLAR SAKTI: Memaksa sistem menggunakan jalur API v1 yang mendukung Gemini 1.5 Flash
+os.environ["API_VERSION"] = "v1"
+
 import streamlit as strl
 import google.generativeai as genai
 
@@ -35,7 +39,7 @@ with tab1:
         else:
             with strl.spinner("AI sedang membedah struktur musikmu..."):
                 try:
-                    # Menggunakan model paling aman dan kompatibel untuk segala versi pustaka
+                    # Menggunakan model 1.5-flash di jalur v1
                     model = genai.GenerativeModel('gemini-1.5-flash')
                     perintah = f"Analisis struktur musik, progresi chord, dan makna dari teks musik berikut secara mendalam namun mudah dipahami: {input_musik}"
                     respons = model.generate_content(perintah)
@@ -63,7 +67,7 @@ with tab2:
         else:
             with strl.spinner("AI sedang menggubah lirik, not angka, dan chord untukmu..."):
                 try:
-                    # Menggunakan model paling aman dan kompatibel untuk segala versi pustaka
+                    # Menggunakan model 1.5-flash di jalur v1
                     model = genai.GenerativeModel('gemini-1.5-flash')
                     perintah = (
                         f"Buatkan sebuah lagu utuh (ada Bait/Verse dan Reff/Chorus) dengan tema '{tema}', "

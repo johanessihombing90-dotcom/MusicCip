@@ -32,7 +32,7 @@ with tab1:
             with st.spinner("🔮 MusicCip sedang merancang aransemen musik..."):
                 if genre_pilihan == "Otomatis (Deteksi Emosi Lirik oleh AI)":
                     prompt_analisis = f"Analisis lirik lagu ini: '{lirik_input}'. Tentukan genre musik, mood, dan perkiraan tempo (BPM). Jawab singkat 1 paragraf."
-                    model = genai.GenerativeModel('gemini-pro')
+                    model = genai.GenerativeModel('gemini-1.5-flash')
                     respons = model.generate_content(prompt_analisis)
                     st.info(f"**📋 Hasil Analisis Otomatis AI:**\n{respons.text}")
                 else:
@@ -73,7 +73,7 @@ with tab2:
                 Lirik:      Ha  ri    i     ni    ku    ba    ha  gia
                 """
                 
-                model = genai.GenerativeModel('gemini-pro')
+               model = genai.GenerativeModel('gemini-1.5-flash')
                 respons = model.generate_content(prompt_songwriter)
                 
                 st.success("✨ Lagu, Not Angka & Chord Berhasil Diciptakan!")

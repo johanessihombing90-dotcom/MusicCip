@@ -1,86 +1,75 @@
-import streamlit as st
+import streamlit as strl
 import google.generativeai as genai
 
-# 1. KONFIGURASI AI GEMINI & HALAMAN UTAMA
-genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
+# Konfigurasi kunci API Gemini dari Secrets Streamlit
+try:
+    genai.configure(api_key=strl.secrets["GEMINI_API_KEY"])
+except Exception:
+    strl.error("API Key Gemini belum diatur di Advanced Settings -> Secrets!")
 
-st.set_page_config(page_title="MusicCip - AI Pembuat Musik, Not & Chord", page_icon="🎵", layout="centered")
+# Konfigurasi Halaman Utama Aplikasi
+strl.set_page_config(page_title="MusicCip", page_icon="🎵", layout="centered")
 
-# Tampilan Atas Aplikasi
-st.title("🎵 MusicCip")
-st.subheader("Platform AI Kreator Musik, Lirik, & Chord Otomatis")
-st.write("Selamat datang di MusicCip! Gunakan menu di bawah ini untuk menciptakan musik atau menulis lagu baru lengkap dengan not angka dan kunci gitar.")
+strl.title("🎵 MusicCip")
+strl.caption("AI Pembuat Musik, Not Angka & Chord Otomatis")
+strl.write("Selamat datang di MusicCip! Ciptakan lirik lagu, not angka, dan chord gitar instan dengan bantuan kecerdasan buatan.")
 
-# MEMBUAT DUA MENU TAB (NAVIGASI)
-tab1, tab2 = st.tabs(["🎸 Ciptakan Musik dari Lirik", "📝 Buat Lirik + Not & Chord Otomatis"])
+# Membuat Menu Navigasi Tab
+tab1, tab2 = strl.tabs(["🔍 Analisis & Bedah Musik", "✍️ Ciptakan Lagu Baru"])
 
 # ==========================================
-# MENU 1: CIPTAKAN MUSIK DARI LIRIK
+# MENU 1: ANALISIS & BEDAH MUSIK
 # ==========================================
 with tab1:
-    st.header("Ciptakan Musik Otomatis")
-    lirik_input = st.text_area("✍️ Masukkan Lirik Lagu Anda:", height=150, placeholder="Tempel lirik lagu di sini...", key="lirik_main")
+    strl.header("🔍 Analisis Komposisi Musik")
+    strl.write("Masukkan lirik atau struktur lagu untuk dianalisis progresi chord dan maknanya.")
     
-    genre_pilihan = st.selectbox(
-        "🎸 Pilih Gaya Musik Utama:", 
-        ["Otomatis (Deteksi Emosi Lirik oleh AI)", "Pop Modern", "Rock Bersemangat", "Jazz Santai", "Akustik Syahdu", "Dangdut Asik"],
-        key="genre_box"
-    )
-
-    if st.button("MULAI CIPTAKAN MUSIK 🚀", key="btn_music"):
-        if lirik_input:
-            with st.spinner("🔮 MusicCip sedang merancang aransemen musik..."):
-                if genre_pilihan == "Otomatis (Deteksi Emosi Lirik oleh AI)":
-                    prompt_analisis = f"Analisis lirik lagu ini: '{lirik_input}'. Tentukan genre musik, mood, dan perkiraan tempo (BPM). Jawab singkat 1 paragraf."
-                    model = genai.GenerativeModel('gemini-1.5-flash')
-                    respons = model.generate_content(prompt_analisis)
-                    st.info(f"**📋 Hasil Analisis Otomatis AI:**\n{respons.text}")
-                else:
-                    st.info(f"Aransemen disiapkan untuk Gaya: {genre_pilihan}")
-                
-                st.warning("🔄 Menghubungkan ke server audio generator...")
-                st.success("🎉 Musik berhasil dibuat! (Fitur audio .mp3 sedang disiapkan)")
+    input_musik = strl.text_area("Tempel lirik atau progresi chord di sini:", height=150, placeholder="Contoh: C - G - Am - F...")
+    tombol_analisis = strl.button("Bedah Musik Sekarang", key="btn_analisis")
+    
+    if tombol_analisis:
+        if input_musik.strip() == "":
+            strl.warning("Silakan masukkan teks musik terlebih dahulu!")
         else:
-            st.warning("Silakan masukkan lirik lagunya terlebih dahulu!")
+            with strl.spinner("AI sedang membedah struktur musikmu..."):
+                try:
+                    model = genai.GenerativeModel('gemini-1.5-flash')
+                    perintah = f"Analisis struktur musik, progresi chord, dan makna dari teks musik berikut secara mendalam namun mudah dipahami: {input_musik}"
+                    respons = model.generate_content(perintah)
+                    strl.success("Analisis Selesai!")
+                    strl.markdown(respons.text)
+                except Exception as e:
+                    strl.error(f"Terjadi kesalahan saat menghubungi AI: {e}")
 
 # ==========================================
-# MENU 2: BUAT LIRIK + NOT ANGKA & CHORD OTOMATIS
+# MENU 2: CIPTAKAN LAGU BARU
 # ==========================================
 with tab2:
-    st.header("Asisten Penulis Lagu, Not Angka & Chord")
-    st.write("Tulis ide cerita atau tema lagu yang Anda inginkan. AI akan membuatkan lirik lengkap beserta panduan nada menggunakan not angka dan kunci gitar (chord)!")
+    strl.header("✍️ Generator Lagu & Not Angka")
+    strl.write("Tentukan tema, genre, dan biarkan AI menulis lagu lengkap untukmu.")
     
-    tema_input = st.text_input("💡 Masukkan Tema / Ide Lagu Anda:", placeholder="Contoh: Lagu ceria tentang keindahan desa, atau lagu sedih tentang perpisahan")
+    tema = strl.text_input("Apa tema lagu yang diinginkan?", placeholder="Contoh: Rindu kampung halaman, persahabatan, patah hati...")
+    genre = strl.selectbox("Pilih Genre Musik:", ["Pop", "Akustik / Folk", "Dangdut", "Rock", "Jazz", "Reggae"])
+    tempo = strl.select_slider("Pilih Tempo Lagu:", options=["Lambat (Slow)", "Sedang (Moderate)", "Cepat (Fast)"])
     
-    if st.button("GENERATE LIRIK, NOT & CHORD 📝✨", key="btn_lyrics"):
-        if tema_input:
-            with st.spinner("✍️ MusicCip sedang menggubah lirik, not angka, dan kunci gitar..."):
-                
-                # Prompt baru yang memerintahkan Gemini membuat lirik, not angka, dan chord gitar secara sejajar
-                prompt_songwriter = f"""
-                Buatlah sebuah lirik lagu utuh yang memiliki nada dan harmonisasi indah berdasarkan tema ini: '{tema_input}'. 
-                Lagu harus terdiri dari struktur standar: Bait 1 (Verse 1), Bait 2 (Verse 2), Reff (Chorus), dan Penutup (Outro).
-                
-                STRUKTUR PENULISAN SETIAP BARIS LAGU WAJIB SEPERTI INI:
-                Tuliskan baris KUNCI GITAR/CHORD (seperti C, G, Am, F, Dm, dll) di baris paling atas.
-                Tuliskan baris NOT ANGKA (menggunakan angka 1 2 3 4 5 6 7, titik, dan garis ketukan) di baris kedua.
-                Tuliskan baris LIRIK LAGU tepat di bawahnya agar posisi ketukan chord, not angka, dan liriknya SEJAJAR dan pas saat dimainkan.
-                
-                Contoh format tampilan yang wajib Anda ikuti:
-                [Bait 1]
-                Chord:      C           F           G           C
-                Not Angka:  3  .  4  |  5  .  1  |  7  .  6  |  5  .
-                Lirik:      Ha  ri    i     ni    ku    ba    ha  gia
-                """
-                
-               model = genai.GenerativeModel('gemini-1.5-flash')
-                respons = model.generate_content(prompt_songwriter)
-                
-                st.success("✨ Lagu, Not Angka & Chord Berhasil Diciptakan!")
-                st.markdown("---")
-                # Menggunakan st.code agar format spasi/jarak antarteks terjaga rapi dan tidak bergeser di layar HP
-                st.code(respons.text, language="text")
-                st.markdown("---")
-                st.caption("Tips: Anda bisa menyalin teks di atas untuk disimpan atau langsung dimainkan dengan gitar/piano Anda!")
+    tombol_cipta = strl.button("Ciptakan Lagu Sekarang", key="btn_cipta")
+    
+    if tombol_cipta:
+        if tema.strip() == "":
+            strl.warning("Silakan isi tema lagu terlebih dahulu!")
         else:
-            st.warning("Silakan isi tema atau ide lagunya terlebih dahulu!")
+            with strl.spinner("AI sedang menggubah lirik, not angka, dan chord untukmu..."):
+                try:
+                    model = genai.GenerativeModel('gemini-1.5-flash')
+                    perintah = (
+                        f"Buatkan sebuah lagu utuh (ada Bait/Verse dan Reff/Chorus) dengan tema '{tema}', "
+                        f"bergenre {genre}, dengan tempo {tempo}. "
+                        f"PENTING: Tuliskan chord gitarnya di atas lirik secara presisi, "
+                        f"dan sertakan juga panduan 'Not Angka' (1 2 3 4 5 6 7) di setiap baris liriknya "
+                        f"agar lagu ini bisa langsung dinyanyikan atau dimainkan dengan alat musik."
+                    )
+                    respons = model.generate_content(perintah)
+                    strl.success("Lagu Berhasil Diciptakan!")
+                    strl.markdown(respons.text)
+                except Exception as e:
+                    strl.error(f"Terjadi kesalahan saat menghubungi AI: {e}")

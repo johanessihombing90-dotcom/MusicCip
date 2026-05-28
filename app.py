@@ -1,18 +1,20 @@
 import streamlit as strl
 import google.generativeai as genai
 
-# Konfigurasi kunci API Gemini dari Secrets Streamlit
-try:
-    genai.configure(api_key=strl.secrets["GEMINI_API_KEY"])
-except Exception:
-    strl.error("API Key Gemini belum diatur di Advanced Settings -> Secrets!")
-
-# Konfigurasi Halaman Utama Aplikasi
+# Konfigurasi halaman utama aplikasi
 strl.set_page_config(page_title="MusicCip", page_icon="🎵", layout="centered")
 
 strl.title("🎵 MusicCip")
 strl.caption("AI Pembuat Musik, Not Angka & Chord Otomatis")
 strl.write("Selamat datang di MusicCip! Ciptakan lirik lagu, not angka, dan chord gitar instan dengan bantuan kecerdasan buatan.")
+
+# Ambil API Key dari Secrets Streamlit
+try:
+    api_key = strl.secrets["GEMINI_API_KEY"]
+    genai.configure(api_key=api_key)
+except Exception:
+    strl.error("API Key Gemini belum diatur di Advanced Settings -> Secrets!")
+    strl.stop()
 
 # Membuat Menu Navigasi Tab
 tab1, tab2 = strl.tabs(["🔍 Analisis & Bedah Musik", "✍️ Ciptakan Lagu Baru"])
@@ -33,6 +35,7 @@ with tab1:
         else:
             with strl.spinner("AI sedang membedah struktur musikmu..."):
                 try:
+                    # Menggunakan model paling aman dan kompatibel untuk segala versi pustaka
                     model = genai.GenerativeModel('gemini-1.0-pro')
                     perintah = f"Analisis struktur musik, progresi chord, dan makna dari teks musik berikut secara mendalam namun mudah dipahami: {input_musik}"
                     respons = model.generate_content(perintah)
@@ -60,6 +63,7 @@ with tab2:
         else:
             with strl.spinner("AI sedang menggubah lirik, not angka, dan chord untukmu..."):
                 try:
+                    # Menggunakan model paling aman dan kompatibel untuk segala versi pustaka
                     model = genai.GenerativeModel('gemini-1.0-pro')
                     perintah = (
                         f"Buatkan sebuah lagu utuh (ada Bait/Verse dan Reff/Chorus) dengan tema '{tema}', "
